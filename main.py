@@ -5,13 +5,20 @@ import numpy as np
 from xgboost import XGBClassifier
 from lightgbm import LGBMClassifier
 
+import streamlit as st
+
+import warnings
+from sklearn.exceptions import InconsistentVersionWarning
+warnings.filterwarnings(action='ignore', category=InconsistentVersionWarning)
+warnings.filterwarnings("ignore", category=UserWarning)
+
 # replace with input from user
 Gender = "Male"
 data_dict = {
 "Gender":Gender,
-"Age":                               20,
-"Height":                            1.7,
-"Weight":                            87,
+"Age":                               26,
+"Height":                            1.74,
+"Weight":                            56,
 "family_history_with_overweight":"yes",
 "FAVC":                             "yes",
 "FCVC":                              2,
@@ -23,8 +30,7 @@ data_dict = {
 "FAF":                               1,
 "TUE":                               1,
 "CALC":                               "Sometimes",
-"MTRANS":                             "Public_Transportation",
-"NObeyesdad": "Obesity_Type_III"
+"MTRANS":                             "Public_Transportation"
 }
 test = pd.DataFrame(data_dict, index = [0])
 
@@ -45,7 +51,7 @@ d_to = {'Insufficient_Weight':0,
  'Overweight_Level_I':2,
  'Overweight_Level_II':3}
 cats = pd.Index(['Gender', 'family_history_with_overweight', 'FAVC', 'CAEC', 'SMOKE',
-       'SCC', 'CALC', 'MTRANS', 'NObeyesdad'],
+       'SCC', 'CALC', 'MTRANS'],
       dtype='object')
 conts = pd.Index(['Age', 'Height', 'Weight', 'FCVC', 'NCP', 'CH2O', 'FAF', 'TUE', 'BMI',
        'CAEC', 'CALC'],
@@ -54,7 +60,7 @@ CAEC = {'no':0,'Sometimes':1,'Frequently':2,'Always':3}
 CALC = {'no':0,'Sometimes':1,'Frequently':2,'Always':2}
 preprocessor = pickle.load(open("model/preprocessor.pkl", 'rb'))
 
-test[cats[:-1]] = test[cats[:-1]].apply(lambda x: x.astype('category'))
+test[cats] = test[cats].apply(lambda x: x.astype('category'))
 test["BMI"] = test.Weight/(test.Height)**2
 test.CAEC = test.CAEC.map(CAEC)
 test.CALC = test.CALC.map(CALC)
@@ -67,9 +73,8 @@ test.family_history_with_overweight = test.family_history_with_overweight.cat.co
 test.NCP = test.NCP.round()
 test = preprocessor.transform(test)
 
-print(test.shape)
-
 voting_clf = pickle.load(open("model/finalized_obesity_model.sav", 'rb'))
 output = voting_clf.predict(test)
 
 prediction = np.vectorize(d.__getitem__)(output[:5])
+print(prediction)

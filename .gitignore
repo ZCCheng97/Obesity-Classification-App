@@ -1,4 +1,6 @@
 stvenv/
 data/
+__pycache__
 iris-ml-app.py
 penguins-app.py
+test.py

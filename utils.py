@@ -54,7 +54,7 @@ def user_input_features():
       """
       Gender = st.sidebar.selectbox('Gender',('Male','Female'))
       Age = st.sidebar.slider('Age (in years)', 14.0,61.0,25.0, 0.5)
-      Height= st.sidebar.text_input('Height (in metres)', "hi")
+      Height= st.sidebar.text_input('Height (in metres)', 1.6)
       Weight= st.sidebar.text_input('Weight (in kilograms)', 60.0)
       family_history_with_overweight= st.sidebar.selectbox('Anyone in your family with a history of being overweight?',('yes','no'))
       FAVC= st.sidebar.selectbox('Do you frequently consume high caloric foods?',('yes','no'))

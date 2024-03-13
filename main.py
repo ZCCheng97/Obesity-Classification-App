@@ -45,7 +45,9 @@ conts = pd.Index(['Age', 'Height', 'Weight', 'FCVC', 'NCP', 'CH2O', 'FAF', 'TUE'
        'CAEC', 'CALC'],
       dtype='object')
 
-if input_valid:
+run_state = st.button('Click to run bot')
+
+if input_valid and run_state:
 
       test = process_data(test, cats)
       voting_clf = pickle.load(open("model/finalized_obesity_model.sav", 'rb'))
@@ -55,4 +57,4 @@ if input_valid:
 
       st.subheader('Prediction')
       weight_cats = np.array([v for _, v in sorted(d.items())])
-      st.write(weight_cats[output])
+      st.write("Your weight category is: " + weight_cats[output][0])

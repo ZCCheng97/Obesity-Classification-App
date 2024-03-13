@@ -28,43 +28,77 @@ def process_data(df,categories):
 
       return output_df
 
+def height_valid(string):
+      try:
+            float(string)
+      except ValueError:
+            return False
+      if float(string) < 1.45 or float(string) > 1.98:
+            return False
+      else:
+            return True
+      
+def weight_valid(string):
+      try:
+            float(string)
+      except ValueError:
+            return False
+      if float(string) < 39.0 or float(string) > 173.0:
+            return False
+      else:
+            return True
+
 def user_input_features():
-        """
-        Handles user input on streamlit and generates a dataframe of the inputs.
-        """
-        Gender = st.sidebar.selectbox('Gender',('Male','Female'))
-        Age = st.sidebar.slider('Age (in years)', 14.0,61.0,25.0)
-        Height= st.sidebar.slider('Height (in metres)', 1.45, 1.98, 1.6)
-        Weight= st.sidebar.slider('Weight (in kilograms)', 39.0,173.0,60.0)
-        family_history_with_overweight= st.sidebar.selectbox('Anyone in your family with a history of being overweight?',('yes','no'))
-        FAVC= st.sidebar.selectbox('Do you frequently consume high caloric foods?',('yes','no'))
-        FCVC= st.sidebar.selectbox('On a scale of 1 to 3, how frequently do you consume vegetables?',(1,2,3))
-        NCP=  st.sidebar.selectbox('How many main meals do you have in a day?',(1,2,3,4))
-        CAEC= st.sidebar.selectbox('How often do you eat in between meals?',('Frequently','Sometimes','no'))
-        SMOKE=st.sidebar.selectbox('Are you a smoker?',('yes','no'))
-        CH2O= st.sidebar.selectbox('On a scale of 1 to 3, how frequently do you consume (plain) water?',(1,2,3))
-        SCC=  'no'
-        FAF=  st.sidebar.selectbox('On a scale of 0 to 3, how frequently do you engage in physical activity?',(0,1,2,3))
-        TUE=  st.sidebar.selectbox('On a scale of 0 to 2, how often do you engage with technology devices?',(0,1,2))
-        CALC= st.sidebar.selectbox('How often do you eat consume alcohol?',('Frequently','Sometimes','no'))
-        MTRANS= st.sidebar.selectbox('What is your primary mode of transportation?',('Public_Transportation',"Automobile","Walking", "Bike","Motorbike"))
-        data = {
-            "Gender":Gender,
-            "Age":                               Age,
-            "Height":                            Height,
-            "Weight":                            Weight,
-            "family_history_with_overweight":family_history_with_overweight,
-            "FAVC":                             FAVC,
-            "FCVC":                              FCVC,
-            "NCP":                               NCP,
-            "CAEC":                               CAEC,
-            "SMOKE":                              SMOKE,
-            "CH2O":                              CH2O,
-            "SCC":                                SCC,
-            "FAF":                               FAF,
-            "TUE":                              TUE,
-            "CALC":                               CALC,
-            "MTRANS":                             MTRANS
+      """
+      Handles user input on streamlit and generates a dataframe of the inputs.
+      """
+      Gender = st.sidebar.selectbox('Gender',('Male','Female'))
+      Age = st.sidebar.slider('Age (in years)', 14.0,61.0,25.0, 0.5)
+      Height= st.sidebar.text_input('Height (in metres)', "hi")
+      Weight= st.sidebar.text_input('Weight (in kilograms)', 60.0)
+      family_history_with_overweight= st.sidebar.selectbox('Anyone in your family with a history of being overweight?',('yes','no'))
+      FAVC= st.sidebar.selectbox('Do you frequently consume high caloric foods?',('yes','no'))
+      FCVC= st.sidebar.selectbox('How frequently do you consume vegetables?',('Frequently','Sometimes','Almost never'))
+      NCP=  st.sidebar.selectbox('How many main meals do you have in a day?',(1,2,3,4))
+      CAEC= st.sidebar.selectbox('How often do you eat in between meals?',('Frequently','Sometimes','no'))
+      SMOKE=st.sidebar.selectbox('Are you a smoker?',('yes','no'))
+      CH2O= st.sidebar.selectbox('How frequently do you consume (plain) water?',('Frequently','Sometimes','Almost never'))
+      SCC=  'no'
+      FAF=  st.sidebar.selectbox('How frequently do you engage in physical activity?',('Frequently','Sometimes','Almost never',"Never"))
+      TUE=  st.sidebar.selectbox('How often do you engage with technology devices?',('Sometimes','Almost never',"Never"))
+      CALC= st.sidebar.selectbox('How often do you eat consume alcohol?',('Frequently','Sometimes','no'))
+      MTRANS= st.sidebar.selectbox('What is your primary mode of transportation?',('Public_Transportation',"Automobile","Walking", "Bike","Motorbike"))
+      
+      input_valid = height_valid(Height) and weight_valid(Weight)
+      if not height_valid(Height):
+            st.error("Please input a valid height value between 1.45 to 1.98 metres.")
+            st.stop()
+      if not weight_valid(Weight):
+            st.error("Please input a valid weight value between 39 to 173 kilograms.")
+            st.stop()
+
+      freq_to_ord = {"Frequently": 3, 
+                  "Sometimes":2, 
+                  "Almost never":1, 
+                  "Never":0}
+      
+      data = {
+      "Gender":Gender,
+      "Age":                               Age,
+      "Height":                            float(Height),
+      "Weight":                            float(Weight),
+      "family_history_with_overweight":family_history_with_overweight,
+      "FAVC":                             FAVC,
+      "FCVC":                              freq_to_ord[FCVC],
+      "NCP":                               NCP,
+      "CAEC":                               CAEC,
+      "SMOKE":                              SMOKE,
+      "CH2O":                              freq_to_ord[CH2O],
+      "SCC":                                SCC,
+      "FAF":                               freq_to_ord[FAF],
+      "TUE":                              freq_to_ord[TUE],
+      "CALC":                               CALC,
+      "MTRANS":                             MTRANS
 }
-        features = pd.DataFrame(data, index=[0])
-        return features
+      features = pd.DataFrame(data, index=[0])
+      return features, input_valid

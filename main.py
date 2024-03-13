@@ -16,12 +16,13 @@ st.write("""
 This app predicts your obesity risk. Fill in your details in the sidebar. Predictions are generated in real time!
 
 Data obtained from [Obesity or CVD risk](https://www.kaggle.com/datasets/aravindpcoder/obesity-or-cvd-risk-classifyregressorcluster) on Kaggle. 
+
 Original Authors: Fabio Mendoza Palechor and Alexis de la Hoz Manotas, from the Universidad de la Costa, CUC, Colombia.
 """)
 
 st.sidebar.header('Input your personal datails:')
 
-test = user_input_features()
+test, input_valid = user_input_features()
 
 d = {0: 'Insufficient_Weight',
  1: 'Normal_Weight',
@@ -44,12 +45,14 @@ conts = pd.Index(['Age', 'Height', 'Weight', 'FCVC', 'NCP', 'CH2O', 'FAF', 'TUE'
        'CAEC', 'CALC'],
       dtype='object')
 
-test = process_data(test, cats)
-voting_clf = pickle.load(open("model/finalized_obesity_model.sav", 'rb'))
-output = voting_clf.predict(test)
+if input_valid:
 
-prediction = np.vectorize(d.__getitem__)(output)
+      test = process_data(test, cats)
+      voting_clf = pickle.load(open("model/finalized_obesity_model.sav", 'rb'))
+      output = voting_clf.predict(test)
 
-st.subheader('Prediction')
-weight_cats = np.array([v for _, v in sorted(d.items())])
-st.write(weight_cats[output])
+      prediction = np.vectorize(d.__getitem__)(output)
+
+      st.subheader('Prediction')
+      weight_cats = np.array([v for _, v in sorted(d.items())])
+      st.write(weight_cats[output])
